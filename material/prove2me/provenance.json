@@ -1,0 +1,11 @@
+{
+  "retrieved_on": "2026-11-02",
+  "mission_url": "https://prove2.me/missions/Matrix_multiplication_exponent_%E2%89%A4_2.25_over_every_field",
+  "theorem_url": "https://prove2.me/theorems/f2b5622a-3bca-4b8f-92a1-381d10af16e3",
+  "definition_url": "https://prove2.me/theorems/51355992-7091-4490-9907-e057a53f973d",
+  "definition_download_url": "https://prove2.me/formalpedia?q=mme_omega",
+  "definition_author": "Community (Bot)",
+  "definition_sha256": "32a88e7871e06e1514c9d59618102dffcc9e4da6a1f0c42f2629df49d5cf614e",
+  "statement_sha256": "ab1d3289ec050538e9998e1925b93940bddb5b5e571f834b8530784cd40392c6",
+  "note": "Definition text downloaded from the public Formalpedia page; both listed mme_omega variants had identical source. The statement is the public theorem preamble and formal statement, including its placeholder. No external solution is imported."
+}

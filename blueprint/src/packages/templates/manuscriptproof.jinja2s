@@ -1,0 +1,5 @@
+name: manuscriptproof mainresult
+
+name: hyperref
+<a href="{{ obj.idref.label.url }}">{{ obj }}</a>
+

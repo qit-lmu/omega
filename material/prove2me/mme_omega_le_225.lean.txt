@@ -1,0 +1,7 @@
+import Definitions.Def_mme_omega
+universe u
+open MME
+
+theorem mme_omega_le_225 {K : Type u} [Field K] :
+    matMulExp K ≤ (2.25 : ℝ) := by
+  sorry

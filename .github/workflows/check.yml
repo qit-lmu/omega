@@ -1,0 +1,79 @@
+name: Lean and blueprint
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: leanprover/lean-action@v1
+        with:
+          auto-config: "false"
+          build: "true"
+          use-mathlib-cache: "true"
+      - uses: astral-sh/setup-uv@v10.3.3
+        with:
+          python-version: "3.13"
+      - name: Check blueprint coverage
+        run: make coverage
+      - name: Audit project axioms
+        run: lake env lean scripts/Audit.lean
+      - name: Install blueprint system dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends \
+            graphviz libgraphviz-dev pkg-config \
+            latexmk texlive-latex-recommended texlive-fonts-recommended lmodern
+      - name: Build blueprint and declaration documentation
+        run: |
+          uv sync --project blueprint --locked
+          uv run --project blueprint --locked leanblueprint web
+          lake exe checkdecls blueprint/lean_decls --docs
+          make tooling-tests
+      - name: Build printable blueprint
+        run: uv run --project blueprint --locked leanblueprint pdf
+      - name: Stage blueprint site
+        run: |
+          mkdir -p _site/web _site/docs _site/print
+          cp -R blueprint/web/. _site/web/
+          cp -R blueprint/docs/. _site/docs/
+          cp blueprint/print/print.pdf _site/print/print.pdf
+          cp blueprint/site-index.html _site/index.html
+      - name: Upload blueprint
+        uses: actions/upload-artifact@v7
+        with:
+          name: blueprint
+          path: _site
+      - name: Upload GitHub Pages artifact
+        if: ${{ github.event_name != 'pull_request' && github.ref == format('refs/heads/{0}', github.event.repository.default_branch) }}
+        uses: actions/upload-pages-artifact@v5
+        with:
+          path: _site
+
+  deploy:
+    needs: build
+    if: ${{ github.event_name != 'pull_request' && github.ref == format('refs/heads/{0}', github.event.repository.default_branch) }}
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    concurrency:
+      group: pages
+      cancel-in-progress: false
+    steps:
+      - name: Configure GitHub Pages
+        uses: actions/configure-pages@v6
+      - name: Deploy GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v5
